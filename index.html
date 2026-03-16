@@ -560,7 +560,7 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
     </div>
     <div class="hdr-right">
       <div class="sync-pill local" id="syncPill"><div class="sync-dot"></div><span id="syncLbl">로컬 저장</span></div>
-      <button class="fb-btn" onclick="openM('fbModal')">🔗 동기화 설정</button>
+
       <span class="save-flash" id="saveFlash">✓ 저장</span>
     </div>
   </div>
@@ -1381,9 +1381,7 @@ function pickSharedMemoTag(id, tag) {
 loadLocal();
 writeDOM();
 
-if(!localStorage.getItem('_fbhint') && !window._fbOn) {
-  setTimeout(()=>{ localStorage.setItem('_fbhint','1'); openM('fbModal'); }, 1000);
-}
+// Firebase already configured — no auto popup
 setTimeout(()=>{ if(window._fbOn) setSP('live'); }, 800);
 </script>
 </body>
