@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🇦🇺 호주 이민 플래너</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCH5HxG4zjyjSvFpP3BmivesrJQDwryMT0",
+    authDomain: "austr-f3687.firebaseapp.com",
+    databaseURL: "https://austr-f3687-default-rtdb.firebaseio.com",
+    projectId: "austr-f3687",
+    storageBucket: "austr-f3687.firebasestorage.app",
+    messagingSenderId: "888890246127",
+    appId: "1:888890246127:web:b6f9f8d0424da01a80ec1a"
+  };
+
+  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    try {
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      const r = ref(db, 'planner');
+      onValue(r, snap => {
+        const d = snap.val();
+        if (d && !window._lw) { if (window._applyRemote) window._applyRemote(d); }
+      });
+      window._fbWrite = d => {
+        window._lw = true;
+        set(r, d).then(() => setTimeout(() => window._lw = false, 300));
+      };
+      window._fbOn = true;
+    } catch(e) { window._fbOn = false; }
+  }
+</script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --surface2: #faf9f7;
+  --border: #e3ddd4;
+  --border-light: #ede9e2;
+  --text: #191816;
+  --text-2: #6b6560;
+  --text-3: #b0a99f;
+  --rose: #d94f63;
+  --rose-bg: #fdf0f2;
+  --rose-mid: #f5c2cb;
+  --ocean: #2972e8;
+  --ocean-bg: #eef4ff;
+  --ocean-mid: #aac4f5;
+  --gold: #b8832a;
+  --gold-bg: #fdf5e8;
+  --gold-mid: #e8c98a;
+  --green: #288a5e;
+  --green-bg: #edf7f2;
+  --amber: #c47a1a;
+  --amber-bg: #fef5e4;
+  --purple: #6d47c7;
+  --purple-bg: #f0ecfb;
+  --r: 12px;
+  --r-sm: 8px;
+  --r-xs: 6px;
+  --font: 'Noto Sans KR', 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+
+/* ── Header ── */
+header {
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr { max-width: 1060px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
+.hdr-flag { font-size: 20px; flex-shrink: 0; }
+.hdr-title { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
+.hdr-sub { font-size: 12px; color: var(--text-2); }
+.hdr-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.sync-pill {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px;
+  transition: all .3s;
+}
+.sync-pill.local  { background: var(--border-light); color: var(--text-2); }
+.sync-pill.live   { background: var(--green-bg); color: var(--green); }
+.sync-pill.syncing{ background: var(--amber-bg); color: var(--amber); animation: blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.5} }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.save-flash { font-size: 11px; color: var(--green); opacity: 0; transition: opacity .25s; }
+.save-flash.on { opacity: 1; }
+.fb-btn {
+  font-size: 11px; color: var(--text-2); background: none;
+  border: 1px solid var(--border); border-radius: var(--r-xs);
+  padding: 4px 9px; cursor: pointer; font-family: var(--font);
+  transition: all .15s;
+}
+.fb-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Scenario bar ── */
+.sbar { background: var(--surface); border-bottom: 1px solid var(--border-light); }
+.sbar-inner {
+  max-width: 1060px; margin: 0 auto; padding: 0 20px;
+  display: flex; align-items: center; overflow-x: auto; scrollbar-width: none;
+}
+.sbar-inner::-webkit-scrollbar { display: none; }
+.stab {
+  display: flex; align-items: center; gap: 5px; padding: 9px 14px;
+  font-size: 13px; font-weight: 500; color: var(--text-2);
+  background: none; border: none; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; cursor: pointer; white-space: nowrap; transition: all .15s;
+}
+.stab:hover { color: var(--text); }
+.stab.on { color: var(--gold); border-bottom-color: var(--gold); }
+.stab-del {
+  font-size: 10px; color: var(--text-3); background: none; border: none;
+  cursor: pointer; padding: 1px 3px; border-radius: 3px; transition: color .15s;
+  display: none; line-height: 1;
+}
+.stab:hover .stab-del { display: inline; }
+.stab-del:hover { color: var(--rose); }
+.sadd {
+  padding: 9px 12px; font-size: 12px; color: var(--text-3); background: none;
+  border: none; cursor: pointer; white-space: nowrap; font-family: var(--font);
+  transition: color .15s; flex-shrink: 0;
+}
+.sadd:hover { color: var(--gold); }
+
+/* ── Main layout ── */
+main { max-width: 1060px; margin: 0 auto; padding: 20px 20px 60px; display: flex; flex-direction: column; gap: 16px; }
+
+/* ── Banner ── */
+.banner {
+  background: var(--surface); border: 1px solid var(--border-light);
+  border-radius: var(--r); padding: 18px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+  animation: up .4s ease;
+}
+.banner-left { flex: 1; min-width: 200px; }
+.banner-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.s-emoji-btn {
+  font-size: 20px; background: none; border: none; cursor: pointer;
+  padding: 2px 5px; border-radius: var(--r-xs); transition: background .15s;
+  line-height: 1;
+}
+.s-emoji-btn:hover { background: var(--gold-bg); }
+.s-name-inp {
+  font-size: 16px; font-weight: 700; letter-spacing: -.3px;
+  background: transparent; border: none; border-bottom: 1px dashed transparent;
+  outline: none; color: var(--text); min-width: 100px; max-width: 280px;
+  font-family: var(--font); transition: border-color .2s;
+}
+.s-name-inp:focus { border-bottom-color: var(--gold); }
+.dday-lbl { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text-2); margin-bottom: 4px; }
+.dday-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.dday-inp {
+  font-size: 22px; font-weight: 700; letter-spacing: -.5px;
+  background: transparent; border: none; border-bottom: 2px solid var(--border);
+  outline: none; cursor: pointer; color: var(--gold); font-family: var(--font);
+  transition: border-color .2s;
+}
+.dday-inp:focus { border-bottom-color: var(--gold); }
+.dday-pill { font-family: var(--mono); font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+.dday-pill.far  { background: var(--green-bg); color: var(--green); }
+.dday-pill.near { background: var(--amber-bg); color: var(--amber); }
+.dday-pill.over { background: var(--rose-bg);  color: var(--rose); }
+.dday-hint { font-size: 13px; color: var(--text-3); }
+.circles { display: flex; gap: 14px; }
+.circ { text-align: center; }
+.circ svg { width: 50px; height: 50px; }
+.circ-num { font-family: var(--mono); font-size: 11px; font-weight: 500; }
+.circ-name { font-size: 11px; color: var(--text-2); margin-top: 2px; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Person grid ── */
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:680px){ .pgrid { grid-template-columns: 1fr; } }
+
+/* ── Person panel ── */
+.ppanel {
+  background: var(--surface); border: 1px solid var(--border-light);
+  border-radius: var(--r); overflow: hidden; animation: up .45s ease;
+}
+.phead { padding: 14px 16px 12px; border-bottom: 1px solid var(--border-light); }
+.phead.rose  { background: var(--rose-bg); }
+.phead.ocean { background: var(--ocean-bg); }
+.phead-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
+.pname-row { display: flex; align-items: center; gap: 7px; }
+.pname {
+  font-size: 15px; font-weight: 700; letter-spacing: -.3px;
+  background: transparent; border: none;
+  border-bottom: 1px dashed transparent; outline: none; cursor: pointer;
+  font-family: var(--font); transition: border-color .2s;
+}
+.pname:focus { border-bottom-color: currentColor; }
+.pname.rose  { color: var(--rose); }
+.pname.ocean { color: var(--ocean); }
+.birth-tag {
+  font-family: var(--mono); font-size: 10px; padding: 2px 6px;
+  border-radius: 10px; font-weight: 500;
+}
+.birth-tag.rose  { background: var(--rose-mid);  color: #8b1a2a; }
+.birth-tag.ocean { background: var(--ocean-mid); color: #0f3d9e; }
+.ppct { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.ppct.rose  { color: var(--rose); }
+.ppct.ocean { color: var(--ocean); }
+.pbar { height: 3px; border-radius: 2px; background: rgba(255,255,255,.7); overflow: hidden; margin-bottom: 10px; }
+.pbar-fill { height: 100%; border-radius: 2px; transition: width .5s ease; }
+.pbar-fill.rose  { background: var(--rose); }
+.pbar-fill.ocean { background: var(--ocean); }
+.visa-lbl { font-size: 11px; font-weight: 600; color: var(--text-2); display: block; margin-bottom: 3px; letter-spacing: .04em; }
+.visa-sel {
+  width: 100%; font-size: 13px; border: 1px solid rgba(0,0,0,.1);
+  border-radius: var(--r-sm); padding: 6px 8px; background: rgba(255,255,255,.85);
+  cursor: pointer; outline: none; font-family: var(--font); color: var(--text);
+  transition: border-color .2s;
+}
+.visa-sel:focus { border-color: var(--gold); }
+.visa-custom {
+  margin-top: 5px; width: 100%; font-size: 13px;
+  padding: 6px 8px; border: 1px solid rgba(0,0,0,.1); border-radius: var(--r-sm);
+  background: rgba(255,255,255,.85); outline: none; font-family: var(--font);
+  transition: border-color .2s;
+}
+.visa-custom:focus { border-color: var(--gold); }
+
+/* ── Page tabs ── */
+.ptabs { display: flex; border-bottom: 1px solid var(--border-light); }
+.ptab {
+  flex: 1; padding: 8px 4px; font-size: 12px; font-weight: 500;
+  color: var(--text-3); background: none; border: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  cursor: pointer; font-family: var(--font); transition: color .15s;
+}
+.ptab:hover { color: var(--text-2); }
+.ptab.on.rose  { color: var(--rose);  border-bottom-color: var(--rose); }
+.ptab.on.ocean { color: var(--ocean); border-bottom-color: var(--ocean); }
+
+/* ── Panel body ── */
+.pbody { padding: 10px 12px; min-height: 260px; max-height: 400px; overflow-y: auto; }
+
+.empty { text-align: center; padding: 36px 12px; font-size: 13px; color: var(--text-3); line-height: 1.8; }
+
+/* ── NOTION BLOCKS ── */
+.nblock {
+  border: 1px solid var(--border-light); border-radius: var(--r-sm);
+  margin-bottom: 6px; background: var(--surface); overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.nblock:hover { border-color: var(--border); }
+.nblock.expanded { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+
+/* Block header / title row */
+.nblock-hdr {
+  display: flex; align-items: center; gap: 6px; padding: 8px 10px; cursor: pointer;
+}
+.nblock-toggle {
+  font-size: 10px; color: var(--text-3); flex-shrink: 0;
+  transition: transform .15s; width: 14px; text-align: center;
+  background: none; border: none; cursor: pointer;
+  line-height: 1; padding: 0;
+}
+.nblock.expanded .nblock-toggle { transform: rotate(90deg); }
+.nblock-check {
+  width: 18px; height: 18px; flex-shrink: 0; border-radius: 5px;
+  border: 1.5px solid var(--border); background: white; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.nblock-check svg { display: none; }
+.nblock-check.on svg { display: block; }
+.nblock-check.on.rose  { background: var(--rose);  border-color: var(--rose); }
+.nblock-check.on.ocean { background: var(--ocean); border-color: var(--ocean); }
+.nblock-title {
+  flex: 1; font-size: 13px; font-weight: 600; letter-spacing: -.2px;
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-family: var(--font); cursor: text;
+}
+.nblock-title.done { text-decoration: line-through; color: var(--text-3); }
+.nblock-badge {
+  font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; flex-shrink: 0;
+}
+.nblock-rm {
+  font-size: 11px; color: var(--text-3); background: none; border: none;
+  cursor: pointer; padding: 2px 4px; transition: color .15s; opacity: 0;
+}
+.nblock-hdr:hover .nblock-rm { opacity: 1; }
+.nblock-rm:hover { color: var(--rose); }
+
+/* Block body (expandable) */
+.nblock-body { display: none; border-top: 1px solid var(--border-light); padding: 10px 12px; background: var(--surface2); }
+.nblock.expanded .nblock-body { display: block; }
+
+/* Block body fields */
+.nfield { margin-bottom: 10px; }
+.nfield:last-child { margin-bottom: 0; }
+.nfield-lbl { font-size: 10px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+.nfield-inp {
+  width: 100%; font-size: 13px; padding: 6px 8px;
+  border: 1px solid var(--border-light); border-radius: var(--r-xs);
+  background: var(--surface); outline: none; font-family: var(--font); color: var(--text);
+  transition: border-color .2s;
+}
+.nfield-inp:focus { border-color: var(--border); }
+.nfield-ta {
+  width: 100%; font-size: 13px; padding: 7px 8px; min-height: 70px; resize: vertical;
+  border: 1px solid var(--border-light); border-radius: var(--r-xs);
+  background: var(--surface); outline: none; font-family: var(--font); color: var(--text);
+  line-height: 1.6; transition: border-color .2s;
+}
+.nfield-ta:focus { border-color: var(--border); }
+.nfield-row { display: flex; gap: 6px; }
+.nfield-row .nfield-inp { flex: 1; }
+.nfield-sel {
+  font-size: 12px; padding: 5px 8px; border: 1px solid var(--border-light);
+  border-radius: var(--r-xs); background: var(--surface); outline: none;
+  font-family: var(--font); color: var(--text); cursor: pointer;
+  transition: border-color .2s;
+}
+.nfield-sel:focus { border-color: var(--border); }
+
+/* Status pill (for docs) */
+.st-pill {
+  font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 10px;
+  cursor: pointer; border: none; font-family: var(--font); transition: all .15s; flex-shrink: 0;
+}
+.st-pill.not_started { background: #f0efed; color: #888; }
+.st-pill.in_progress { background: var(--amber-bg); color: var(--amber); }
+.st-pill.ready       { background: var(--green-bg); color: var(--green); }
+.st-pill.submitted   { background: var(--ocean-bg); color: var(--ocean); }
+
+/* d-badge */
+.dbadge { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 10px; }
+.dbadge.far  { background: var(--green-bg); color: var(--green); }
+.dbadge.near { background: var(--amber-bg); color: var(--amber); }
+.dbadge.over { background: var(--rose-bg);  color: var(--rose); }
+
+/* Add block button */
+.add-block {
+  width: 100%; margin-top: 6px; border: 1.5px dashed var(--border);
+  border-radius: var(--r-sm); padding: 7px; font-size: 12px;
+  color: var(--text-3); background: none; cursor: pointer;
+  font-family: var(--font); transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.add-block:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-bg); }
+
+/* Notes */
+.notes-ta {
+  width: 100%; height: 230px; resize: none;
+  font-size: 13px; line-height: 1.7; border: 1px solid var(--border-light);
+  border-radius: var(--r-sm); padding: 10px; font-family: var(--font);
+  color: var(--text); outline: none; background: var(--surface); transition: border-color .2s;
+}
+.notes-ta:focus { border-color: var(--border); }
+
+/* ── Shared section ── */
+.ssec {
+  background: var(--surface); border: 1px solid var(--border-light);
+  border-radius: var(--r); padding: 16px 18px; animation: up .5s ease;
+}
+.ssec-title { font-size: 14px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.shared-ta {
+  width: 100%; height: 100px; resize: vertical;
+  font-size: 13px; line-height: 1.7; border: 1px solid var(--border-light);
+  border-radius: var(--r-sm); padding: 10px; font-family: var(--font);
+  color: var(--text); outline: none; background: var(--surface); transition: border-color .2s;
+}
+.shared-ta:focus { border-color: var(--border); }
+
+/* Visa table */
+.vtbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vtbl th { text-align: left; padding: 7px 10px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--text-2); border-bottom: 1px solid var(--border-light); }
+.vtbl td { padding: 9px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.vtbl tr:last-child td { border-bottom: none; }
+.vtbl tr:hover td { background: var(--bg); }
+.vcode { font-family: var(--mono); font-weight: 500; color: var(--gold); }
+.vtag { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 8px; }
+.vtag.pr   { background: var(--green-bg); color: var(--green); }
+.vtag.tmp  { background: var(--amber-bg); color: var(--amber); }
+.vdesc { color: var(--text-2); }
+.vnote { font-size: 11px; color: var(--text-3); }
+
+/* ── Modals ── */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4);
+  z-index: 500; display: flex; align-items: center; justify-content: center;
+  padding: 20px; animation: fadeIn .18s ease;
+}
+.modal {
+  background: var(--surface); border-radius: var(--r);
+  padding: 26px; max-width: 500px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.16);
+}
+.modal h2 { font-size: 18px; font-weight: 700; letter-spacing: -.4px; margin-bottom: 8px; }
+.modal p  { font-size: 13px; color: var(--text-2); line-height: 1.7; margin-bottom: 14px; }
+.steps { background: var(--bg); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 16px; }
+.step  { display: flex; gap: 9px; margin-bottom: 8px; font-size: 13px; line-height: 1.6; }
+.step:last-child { margin-bottom: 0; }
+.snum { width: 19px; height: 19px; border-radius: 50%; background: var(--gold); color: white; font-size: 10px; font-weight: 700; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+.step a { color: var(--ocean); text-decoration: none; }
+.step a:hover { text-decoration: underline; }
+.step code { background: var(--border-light); padding: 1px 5px; border-radius: 4px; font-family: var(--mono); font-size: 11px; }
+.mbtns { display: flex; gap: 8px; }
+.mbtn-p {
+  flex: 1; padding: 9px; background: var(--gold); color: white; border: none;
+  border-radius: var(--r-sm); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font); transition: opacity .15s;
+}
+.mbtn-p:hover { opacity: .88; }
+.mbtn-g {
+  padding: 9px 14px; background: none; border: 1px solid var(--border);
+  border-radius: var(--r-sm); font-size: 13px; color: var(--text-2);
+  cursor: pointer; font-family: var(--font); transition: all .15s;
+}
+.mbtn-g:hover { border-color: var(--text-2); }
+
+.snew { max-width: 360px; }
+.snew h3 { font-size: 16px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 14px; }
+.snew label { font-size: 11px; font-weight: 600; color: var(--text-2); display: block; margin-bottom: 3px; letter-spacing: .04em; }
+.snew input[type=text] {
+  width: 100%; font-size: 14px; padding: 8px 10px; margin-bottom: 12px;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  outline: none; font-family: var(--font); transition: border-color .2s;
+}
+.snew input[type=text]:focus { border-color: var(--gold); }
+.egrid { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 14px; }
+.egrid button {
+  font-size: 18px; background: none; border: 2px solid transparent;
+  border-radius: 6px; padding: 3px; cursor: pointer; transition: all .1s; line-height: 1;
+}
+.egrid button.on { border-color: var(--gold); background: var(--gold-bg); }
+
+/* emoji inline picker */
+.epicker {
+  position: absolute; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  z-index: 200; display: flex; flex-wrap: wrap; gap: 3px; max-width: 200px;
+}
+.epicker button { font-size: 18px; background: none; border: none; cursor: pointer; padding: 3px; border-radius: 5px; transition: background .1s; line-height: 1; }
+.epicker button:hover { background: var(--gold-bg); }
+
+footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3); letter-spacing: .03em; }
+
+@keyframes up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Firebase modal -->
+<div class="overlay" id="fbModal" style="display:none">
+  <div class="modal">
+    <h2>🔗 실시간 동기화 설정</h2>
+    <p>두 기기에서 같은 데이터를 실시간 공유하려면 Firebase 무료 계정이 필요해요.</p>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div><a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → 새 프로젝트 만들기</div></div>
+      <div class="step"><div class="snum">2</div><div>좌측 메뉴 → <code>Realtime Database</code> → 데이터베이스 만들기 → <code>테스트 모드</code></div></div>
+      <div class="step"><div class="snum">3</div><div>프로젝트 설정(⚙️) → 내 앱 → 웹앱(<code>&lt;/&gt;</code>) 등록</div></div>
+      <div class="step"><div class="snum">4</div><div>표시된 <code>firebaseConfig</code> 값을 이 HTML 파일 상단에 붙여넣기</div></div>
+      <div class="step"><div class="snum">5</div><div>저장 후 두 기기에서 같은 파일 열기 → 실시간 동기화 완료 ✅</div></div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-p" onclick="closeM('fbModal')">확인, 나중에 설정할게요</button>
+      <button class="mbtn-g" onclick="closeM('fbModal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- New scenario modal -->
+<div class="overlay" id="snewModal" style="display:none">
+  <div class="modal snew">
+    <h3>새 시나리오 추가</h3>
+    <label>시나리오 이름</label>
+    <input type="text" id="snewName" placeholder="예) 골드코스트 루트, 시드니 플랜B…" maxlength="30">
+    <label>이모지 선택</label>
+    <div class="egrid" id="egrid"></div>
+    <div style="display:flex;gap:8px">
+      <button class="mbtn-p" onclick="confirmSnew()">만들기</button>
+      <button class="mbtn-g" onclick="closeM('snewModal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="hdr">
+    <div class="hdr-flag">🇦🇺</div>
+    <div>
+      <div class="hdr-title">호주 이민 플래너</div>
+      <div class="hdr-sub" id="hdrSub">여자친구 &amp; 나</div>
+    </div>
+    <div class="hdr-right">
+      <div class="sync-pill local" id="syncPill"><div class="sync-dot"></div><span id="syncLbl">로컬 저장</span></div>
+      <button class="fb-btn" onclick="openM('fbModal')">🔗 동기화 설정</button>
+      <span class="save-flash" id="saveFlash">✓ 저장</span>
+    </div>
+  </div>
+</header>
+
+<div class="sbar">
+  <div class="sbar-inner" id="stabs"></div>
+</div>
+
+<main>
+  <!-- Banner -->
+  <div class="banner">
+    <div class="banner-left">
+      <div class="banner-meta">
+        <button class="s-emoji-btn" id="curEmoji" onclick="toggleEP()">🇦🇺</button>
+        <input class="s-name-inp" id="sNameInp" placeholder="시나리오 이름…" oninput="onSNameInput()">
+      </div>
+      <div class="dday-lbl">목표 도착일</div>
+      <div class="dday-row">
+        <input type="date" class="dday-inp" id="ddayInp" onchange="autosave()">
+        <span class="dday-pill far" id="ddayPill" style="display:none"></span>
+        <span class="dday-hint" id="ddayHint">날짜를 선택해주세요</span>
+      </div>
+    </div>
+    <div class="circles">
+      <div class="circ">
+        <svg viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="19" fill="none" stroke="#ede9e2" stroke-width="4"/>
+          <circle id="cr1" cx="25" cy="25" r="19" fill="none" stroke="#d94f63" stroke-width="4"
+            stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"
+            transform="rotate(-90 25 25)" style="transition:stroke-dashoffset .55s ease"/>
+        </svg>
+        <div style="margin-top:-42px;height:50px;display:flex;align-items:center;justify-content:center">
+          <span class="circ-num" id="cp1">0%</span>
+        </div>
+        <div class="circ-name" id="cn1">여자친구</div>
+      </div>
+      <div class="circ">
+        <svg viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="19" fill="none" stroke="#ede9e2" stroke-width="4"/>
+          <circle id="cr2" cx="25" cy="25" r="19" fill="none" stroke="#2972e8" stroke-width="4"
+            stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="119.4"
+            transform="rotate(-90 25 25)" style="transition:stroke-dashoffset .55s ease"/>
+        </svg>
+        <div style="margin-top:-42px;height:50px;display:flex;align-items:center;justify-content:center">
+          <span class="circ-num" id="cp2">0%</span>
+        </div>
+        <div class="circ-name" id="cn2">나</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Person panels -->
+  <div class="pgrid">
+    <!-- P1 -->
+    <div class="ppanel">
+      <div class="phead rose">
+        <div class="phead-top">
+          <div class="pname-row">
+            <input class="pname rose" id="p1name" value="여자친구" spellcheck="false" oninput="autosave()">
+            <span class="birth-tag rose">89년생</span>
+          </div>
+          <span class="ppct rose" id="p1pct">0%</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill rose" id="p1bar" style="width:0%"></div></div>
+        <label class="visa-lbl">비자 루트</label>
+        <select class="visa-sel" id="p1visa" onchange="onVisaChange(1,this.value)">
+          <option value="">아직 미정</option>
+          <option value="189">189 — 영주권 (Skilled Independent)</option>
+          <option value="190">190 — 영주권 (State Sponsored)</option>
+          <option value="491">491 — 임시 (Regional Skilled)</option>
+          <option value="482">482 — 임시 (Employer Sponsored)</option>
+          <option value="186">186 — 영주권 (Employer Nominated)</option>
+          <option value="500">500 — 학생 비자</option>
+          <option value="custom">직접 입력</option>
+        </select>
+        <input class="visa-custom" id="p1custom" placeholder="비자 루트 이름…" style="display:none" oninput="autosave()">
+      </div>
+      <div class="ptabs" id="p1tabs">
+        <button class="ptab on rose" onclick="ptab(1,'plans',this)">📋 플랜</button>
+        <button class="ptab" onclick="ptab(1,'docs',this)">📄 서류</button>
+        <button class="ptab" onclick="ptab(1,'timeline',this)">📅 일정</button>
+        <button class="ptab" onclick="ptab(1,'notes',this)">📝 메모</button>
+      </div>
+      <div class="pbody">
+        <div id="p1plans"></div>
+        <div id="p1docs"     style="display:none"></div>
+        <div id="p1timeline" style="display:none"></div>
+        <div id="p1notes"    style="display:none">
+          <textarea class="notes-ta" id="p1notesTa" placeholder="여자친구 메모, 고민, 계획…" oninput="autosave()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="ppanel">
+      <div class="phead ocean">
+        <div class="phead-top">
+          <div class="pname-row">
+            <input class="pname ocean" id="p2name" value="나" spellcheck="false" oninput="autosave()">
+            <span class="birth-tag ocean">02년생</span>
+          </div>
+          <span class="ppct ocean" id="p2pct">0%</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill ocean" id="p2bar" style="width:0%"></div></div>
+        <label class="visa-lbl">비자 루트</label>
+        <select class="visa-sel" id="p2visa" onchange="onVisaChange(2,this.value)">
+          <option value="">아직 미정</option>
+          <option value="189">189 — 영주권 (Skilled Independent)</option>
+          <option value="190">190 — 영주권 (State Sponsored)</option>
+          <option value="491">491 — 임시 (Regional Skilled)</option>
+          <option value="482">482 — 임시 (Employer Sponsored)</option>
+          <option value="186">186 — 영주권 (Employer Nominated)</option>
+          <option value="500">500 — 학생 비자</option>
+          <option value="custom">직접 입력</option>
+        </select>
+        <input class="visa-custom" id="p2custom" placeholder="비자 루트 이름…" style="display:none" oninput="autosave()">
+      </div>
+      <div class="ptabs" id="p2tabs">
+        <button class="ptab on ocean" onclick="ptab(2,'plans',this)">📋 플랜</button>
+        <button class="ptab" onclick="ptab(2,'docs',this)">📄 서류</button>
+        <button class="ptab" onclick="ptab(2,'timeline',this)">📅 일정</button>
+        <button class="ptab" onclick="ptab(2,'notes',this)">📝 메모</button>
+      </div>
+      <div class="pbody">
+        <div id="p2plans"></div>
+        <div id="p2docs"     style="display:none"></div>
+        <div id="p2timeline" style="display:none"></div>
+        <div id="p2notes"    style="display:none">
+          <textarea class="notes-ta" id="p2notesTa" placeholder="내 메모, 고민, 계획…" oninput="autosave()"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared notes -->
+  <div class="ssec">
+    <div class="ssec-title">🗒️ 공동 메모</div>
+    <textarea class="shared-ta" id="sharedTa" placeholder="두 사람 공통 계획, 비자 비교, 예산, 고민…&#10;&#10;예) 189 vs 190 장단점&#10;예) 예상 비용 정리" oninput="autosave()"></textarea>
+  </div>
+
+  <!-- Visa table -->
+  <div class="ssec">
+    <div class="ssec-title">📊 비자 루트 비교</div>
+    <div style="overflow-x:auto">
+      <table class="vtbl">
+        <thead><tr><th>비자</th><th>종류</th><th>특징</th><th>포인트</th></tr></thead>
+        <tbody>
+          <tr><td class="vcode">189</td><td><span class="vtag pr">영주권</span></td><td class="vdesc">고용주/스폰서 불필요, 독립 신청</td><td class="vnote">높은 EOI 점수 필요</td></tr>
+          <tr><td class="vcode">190</td><td><span class="vtag pr">영주권</span></td><td class="vdesc">주정부 스폰서 필요, +5점 보너스</td><td class="vnote">주별 직업 리스트 확인</td></tr>
+          <tr><td class="vcode">491</td><td><span class="vtag tmp">임시</span></td><td class="vdesc">지방 거주 조건, +15점 보너스</td><td class="vnote">3년 후 191 신청 가능</td></tr>
+          <tr><td class="vcode">482</td><td><span class="vtag tmp">임시</span></td><td class="vdesc">고용주 스폰서 필수</td><td class="vnote">186으로 전환 가능</td></tr>
+          <tr><td class="vcode">186</td><td><span class="vtag pr">영주권</span></td><td class="vdesc">고용주 지명 영주권</td><td class="vnote">3년 경력 필요(TRT)</td></tr>
+          <tr><td class="vcode">500</td><td><span class="vtag tmp">임시</span></td><td class="vdesc">학업 목적, 주 48시간 근무</td><td class="vnote">졸업 후 485 전환</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer id="ftr">모든 데이터는 이 브라우저에 저장됩니다</footer>
+</main>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────────────────
+const SK = 'au-v3';
+const EMOJIS = ['🇦🇺','🗂️','🌏','✈️','🏖️','🏙️','🌿','🌊','🏔️','🌴','🏠','💼','🎯','📍','🌆','💛','🌟','🏆','📋','🔑'];
+const ST_CYCLE  = ['not_started','in_progress','ready','submitted'];
+const ST_LBL    = { not_started:'미시작', in_progress:'준비중', ready:'완료', submitted:'제출됨' };
+
+// Visa templates — checklist-style plans
+const V_PLANS = {
+  '189':[
+    {title:'직업 목록(SOL) 확인', note:'호주 이민성 공식 SOL에서 직업 코드 확인'},
+    {title:'영어 시험 점수 확보', note:'IELTS 6.0 이상 또는 PTE 50 이상 필요'},
+    {title:'기술심사(Skills Assessment) 신청', note:'직업별 해당 기관에 신청'},
+    {title:'EOI(SkillSelect) 제출', note:'점수 계산 후 Expression of Interest 제출'},
+    {title:'초청(Invitation) 수신 대기', note:'라운드별 초청 기다리기'},
+    {title:'비자 신청서 제출', note:'ImmiAccount에서 신청'},
+    {title:'건강검진(Medical)', note:'지정 병원에서 검진'},
+    {title:'신원조회(Police Clearance)', note:'거주한 국가별 발급'},
+  ],
+  '190':[
+    {title:'주(State) 스폰서 직업 목록 확인'},
+    {title:'영어 시험 점수 확보'},
+    {title:'기술심사 신청'},
+    {title:'주정부 스폰서십 신청', note:'각 주 이민성 사이트에서 신청'},
+    {title:'EOI 제출'},
+    {title:'초청 수신 대기'},
+    {title:'비자 신청서 제출'},
+    {title:'건강검진'},
+    {title:'신원조회'},
+  ],
+  '491':[
+    {title:'지방(Regional) 스폰서 직업 목록 확인'},
+    {title:'영어 시험 점수 확보'},
+    {title:'기술심사 신청'},
+    {title:'주정부/가족 스폰서십 확보'},
+    {title:'EOI 제출'},
+    {title:'초청 수신'},
+    {title:'비자 신청서 제출'},
+    {title:'지방 지역 거주 확인', note:'Regional area에 3년 거주 조건'},
+    {title:'건강검진'},
+    {title:'신원조회'},
+  ],
+  '482':[
+    {title:'고용주 스폰서 확보', note:'스폰서 고용주 찾기'},
+    {title:'직업 TSMIT 급여 기준 확인'},
+    {title:'영어 시험 점수 확보'},
+    {title:'고용주 스폰서십 신청 완료'},
+    {title:'지명(Nomination) 신청'},
+    {title:'비자 신청서 제출'},
+    {title:'건강검진'},
+    {title:'신원조회'},
+  ],
+  '186':[
+    {title:'ENS 고용주 스폰서 확보'},
+    {title:'Direct Entry 또는 TRT 루트 결정'},
+    {title:'기술심사(Direct Entry의 경우)'},
+    {title:'영어 시험 점수 확보'},
+    {title:'3년 경력 증명(TRT의 경우)'},
+    {title:'지명 신청'},
+    {title:'비자 신청서 제출'},
+    {title:'건강검진'},
+    {title:'신원조회'},
+  ],
+  '500':[
+    {title:'입학 허가서(CoE) 수령'},
+    {title:'OSHC 건강보험 가입'},
+    {title:'영어 시험 점수 확보'},
+    {title:'비자 신청서 제출'},
+    {title:'생활비 증명'},
+    {title:'건강검진(필요시)'},
+  ],
+};
+const V_DOCS = {
+  '189':['여권','영어시험 성적표','기술심사 결과서','학력 증명서','경력 증명서','신원조회서'],
+  '190':['여권','영어시험 성적표','기술심사 결과서','주정부 스폰서십 서류','학력 증명서','경력 증명서','신원조회서'],
+  '491':['여권','영어시험 성적표','기술심사 결과서','스폰서십 서류','학력 증명서','경력 증명서','신원조회서'],
+  '482':['여권','영어시험 성적표','고용 계약서','고용주 스폰서십 서류','경력 증명서','신원조회서'],
+  '186':['여권','영어시험 성적표','기술심사 결과서','3년 경력 증명','고용 계약서','신원조회서'],
+  '500':['여권','입학허가서(CoE)','OSHC 보험증서','영어시험 성적표','재정 증명서'],
+};
+
+// ── State ──────────────────────────────────────────────────────────────────────
+const uid = () => Math.random().toString(36).slice(2,9);
+
+function newPerson(name, birth) {
+  return { name, birth, visa:'', customVisa:'', notes:'', plans:[], docs:[], timeline:[] };
+}
+function newScenario(name, emoji) {
+  return { id:uid(), name, emoji:emoji||'🗂️',
+    p1: newPerson('여자친구', 1989),
+    p2: newPerson('나', 2002),
+    shared:'', targetDate:'' };
+}
+
+let S = {
+  scenarios: [ newScenario('메인 플랜','🇦🇺') ],
+  cur: 0,
+  lastSaved: '',
+};
+const sc = () => S.scenarios[S.cur];
+
+// ── Load / Save ────────────────────────────────────────────────────────────────
+function loadLocal() {
+  try { const r = localStorage.getItem(SK); if(r) S = JSON.parse(r); } catch(e){}
+  if(!S.scenarios||!S.scenarios.length) S.scenarios = [newScenario('메인 플랜','🇦🇺')];
+  S.cur = Math.min(S.cur||0, S.scenarios.length-1);
+}
+
+let _st;
+function autosave() {
+  readDOM();
+  clearTimeout(_st);
+  _st = setTimeout(()=>{
+    S.lastSaved = new Date().toISOString();
+    localStorage.setItem(SK, JSON.stringify(S));
+    if(window._fbOn && window._fbWrite) { setSP('syncing'); window._fbWrite(S); setTimeout(()=>setSP('live'),600); }
+    flash();
+    ftrUpdate();
+  }, 320);
+}
+
+function setSP(s) {
+  document.getElementById('syncPill').className = 'sync-pill '+s;
+  document.getElementById('syncLbl').textContent = {local:'로컬 저장',live:'실시간 동기화 ✦',syncing:'동기화 중…'}[s]||s;
+}
+function flash() { const e=document.getElementById('saveFlash'); e.classList.add('on'); setTimeout(()=>e.classList.remove('on'),1300); }
+function ftrUpdate() { if(S.lastSaved) document.getElementById('ftr').textContent='모든 데이터는 이 브라우저에 저장됩니다 · '+new Date(S.lastSaved).toLocaleString('ko-KR'); }
+
+window._applyRemote = d => { S=d; if(!S.scenarios?.length) S.scenarios=[newScenario('메인 플랜','🇦🇺')]; S.cur=Math.min(S.cur||0,S.scenarios.length-1); writeDOM(); setSP('live'); };
+
+// ── Read DOM → state ───────────────────────────────────────────────────────────
+function readDOM() {
+  const s = sc();
+  s.p1.name       = document.getElementById('p1name').value;
+  s.p2.name       = document.getElementById('p2name').value;
+  s.p1.customVisa = document.getElementById('p1custom').value;
+  s.p2.customVisa = document.getElementById('p2custom').value;
+  s.p1.notes      = document.getElementById('p1notesTa').value;
+  s.p2.notes      = document.getElementById('p2notesTa').value;
+  s.shared        = document.getElementById('sharedTa').value;
+  s.targetDate    = document.getElementById('ddayInp').value;
+  s.name          = document.getElementById('sNameInp').value;
+  document.getElementById('hdrSub').textContent = s.p1.name + ' & ' + s.p2.name;
+  document.getElementById('cn1').textContent = s.p1.name;
+  document.getElementById('cn2').textContent = s.p2.name;
+  updateDday(); updateProg(); renderSTabs();
+}
+
+// ── Write state → DOM ──────────────────────────────────────────────────────────
+function writeDOM() {
+  const s = sc();
+  document.getElementById('p1name').value    = s.p1.name||'여자친구';
+  document.getElementById('p2name').value    = s.p2.name||'나';
+  document.getElementById('p1visa').value    = s.p1.visa||'';
+  document.getElementById('p2visa').value    = s.p2.visa||'';
+  document.getElementById('p1custom').value  = s.p1.customVisa||'';
+  document.getElementById('p2custom').value  = s.p2.customVisa||'';
+  document.getElementById('p1custom').style.display = s.p1.visa==='custom'?'':'none';
+  document.getElementById('p2custom').style.display = s.p2.visa==='custom'?'':'none';
+  document.getElementById('p1notesTa').value = s.p1.notes||'';
+  document.getElementById('p2notesTa').value = s.p2.notes||'';
+  document.getElementById('sharedTa').value  = s.shared||'';
+  document.getElementById('ddayInp').value   = s.targetDate||'';
+  document.getElementById('sNameInp').value  = s.name||'';
+  document.getElementById('curEmoji').textContent = s.emoji||'🗂️';
+  document.getElementById('hdrSub').textContent = (s.p1.name||'여자친구') + ' & ' + (s.p2.name||'나');
+  document.getElementById('cn1').textContent = s.p1.name||'여자친구';
+  document.getElementById('cn2').textContent = s.p2.name||'나';
+  renderSTabs(); renderAll(); updateDday(); updateProg();
+  if(S.lastSaved) ftrUpdate();
+  if(window._fbOn) setSP('live');
+}
+
+function renderAll() {
+  renderPlans(1); renderPlans(2);
+  renderDocs(1); renderDocs(2);
+  renderTimeline(1); renderTimeline(2);
+}
+
+// ── Scenarios ──────────────────────────────────────────────────────────────────
+let _newEmoji = '🗂️';
+
+function renderSTabs() {
+  document.getElementById('stabs').innerHTML =
+    S.scenarios.map((s,i)=>`
+      <button class="stab ${i===S.cur?'on':''}" onclick="switchS(${i})">
+        <span>${s.emoji||'🗂️'}</span>${esc(s.name||'이름없음')}
+        ${S.scenarios.length>1?`<button class="stab-del" onclick="delS(event,${i})">✕</button>`:''}
+      </button>
+    `).join('') +
+    `<button class="sadd" onclick="openSnewModal()">＋ 시나리오 추가</button>`;
+}
+function switchS(i) { readDOM(); S.cur=i; writeDOM(); }
+function delS(e,i) {
+  e.stopPropagation();
+  if(S.scenarios.length<=1) return alert('마지막 시나리오는 삭제할 수 없어요.');
+  if(!confirm(`"${S.scenarios[i].name}" 시나리오를 삭제할까요?`)) return;
+  S.scenarios.splice(i,1); S.cur=Math.min(S.cur,S.scenarios.length-1);
+  writeDOM(); autosave();
+}
+function openSnewModal() {
+  _newEmoji='🗂️';
+  document.getElementById('snewName').value='';
+  document.getElementById('egrid').innerHTML = EMOJIS.map(e=>`<button class="${e===_newEmoji?'on':''}" onclick="pickE('${e}',this)">${e}</button>`).join('');
+  openM('snewModal'); setTimeout(()=>document.getElementById('snewName').focus(),80);
+}
+function pickE(e,btn) { _newEmoji=e; document.querySelectorAll('#egrid button').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+function confirmSnew() {
+  const name = document.getElementById('snewName').value.trim()||'새 시나리오';
+  readDOM(); S.scenarios.push(newScenario(name,_newEmoji)); S.cur=S.scenarios.length-1;
+  closeM('snewModal'); writeDOM(); autosave();
+}
+function onSNameInput() { sc().name=document.getElementById('sNameInp').value; renderSTabs(); autosave(); }
+
+// emoji picker inline
+function toggleEP() {
+  let p = document.getElementById('_ep');
+  if(p){p.remove();document.removeEventListener('click',_epClose);return;}
+  p = document.createElement('div'); p.id='_ep'; p.className='epicker';
+  p.style.cssText='position:absolute;margin-top:6px;';
+  p.innerHTML = EMOJIS.map(e=>`<button onclick="setCurE('${e}')">${e}</button>`).join('');
+  document.getElementById('curEmoji').after(p);
+  setTimeout(()=>document.addEventListener('click',_epClose),10);
+}
+function _epClose(e){const p=document.getElementById('_ep');if(p&&!p.contains(e.target)){p.remove();document.removeEventListener('click',_epClose);}}
+function setCurE(e){sc().emoji=e;document.getElementById('curEmoji').textContent=e;renderSTabs();const p=document.getElementById('_ep');if(p)p.remove();autosave();}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+function ptab(p,tab,btn) {
+  ['plans','docs','timeline','notes'].forEach(t=>{
+    const el=document.getElementById(`p${p}${t}`); if(el) el.style.display=t===tab?'':'none';
+  });
+  const c=p===1?'rose':'ocean';
+  btn.closest('.ptabs').querySelectorAll('.ptab').forEach(b=>b.classList.remove('on',c));
+  btn.classList.add('on',c);
+}
+
+// ── Visa change — KEEP existing data, only offer to fill if empty ──────────────
+function onVisaChange(p, visa) {
+  const person = p===1?sc().p1:sc().p2;
+  person.visa = visa;
+  document.getElementById(`p${p}custom`).style.display = visa==='custom'?'':'none';
+
+  if(visa && visa!=='custom') {
+    const hasPlans = person.plans && person.plans.length > 0;
+    const hasDocs  = person.docs  && person.docs.length  > 0;
+    // Only auto-fill if currently empty; otherwise ask
+    if(!hasPlans && !hasDocs) {
+      fillVisaTemplate(person, visa);
+    } else {
+      const keep = confirm(`기존 플랜/서류 항목이 있어요.\n\n"확인" → 기존 내용 유지\n"취소" → ${visa} 템플릿으로 초기화`);
+      if(!keep) fillVisaTemplate(person, visa);
+    }
+  }
+  renderPlans(p); renderDocs(p); updateProg(); autosave();
+}
+
+function fillVisaTemplate(person, visa) {
+  person.plans = (V_PLANS[visa]||[]).map(t=>({id:uid(),title:t.title,done:false,note:t.note||'',detail:'',priority:'',expanded:false}));
+  person.docs  = (V_DOCS[visa]||[]).map(n=>({id:uid(),name:n,status:'not_started',note:'',deadline:'',expanded:false}));
+}
+
+// ── Progress ───────────────────────────────────────────────────────────────────
+function pct(list) { if(!list||!list.length) return 0; return Math.round(list.filter(i=>i.done).length/list.length*100); }
+function updateProg() {
+  const s=sc(); const a=pct(s.p1.plans), b=pct(s.p2.plans);
+  document.getElementById('p1bar').style.width=a+'%';
+  document.getElementById('p2bar').style.width=b+'%';
+  document.getElementById('p1pct').textContent=a+'%';
+  document.getElementById('p2pct').textContent=b+'%';
+  document.getElementById('cp1').textContent=a+'%';
+  document.getElementById('cp2').textContent=b+'%';
+  const r=19, c=2*Math.PI*r;
+  document.getElementById('cr1').style.strokeDashoffset=c*(1-a/100);
+  document.getElementById('cr2').style.strokeDashoffset=c*(1-b/100);
+}
+
+// ── D-day ──────────────────────────────────────────────────────────────────────
+function updateDday() {
+  const v=document.getElementById('ddayInp').value;
+  const pill=document.getElementById('ddayPill'), hint=document.getElementById('ddayHint');
+  if(!v){pill.style.display='none';hint.style.display='';return;}
+  const d=Math.ceil((new Date(v)-new Date())/86400000);
+  pill.style.display='';hint.style.display='none';
+  pill.className='dday-pill '+(d<0?'over':d<90?'near':'far');
+  pill.textContent=d<0?`${Math.abs(d)}일 초과`:`D-${d}`;
+}
+
+// ── PLANS (Notion blocks) ──────────────────────────────────────────────────────
+function renderPlans(p) {
+  const person=p===1?sc().p1:sc().p2;
+  const color=p===1?'rose':'ocean';
+  const el=document.getElementById(`p${p}plans`);
+  if(!person.plans||!person.plans.length) {
+    el.innerHTML=`<div class="empty">비자 루트를 선택하면<br>플랜 항목이 자동으로 채워져요 ✨<br><br>또는 직접 추가하세요</div>
+    <button class="add-block" onclick="addPlan(${p})">＋ 플랜 항목 추가</button>`;
+    return;
+  }
+  el.innerHTML = person.plans.map(item=>`
+    <div class="nblock ${item.expanded?'expanded':''}" id="nb-${p}-${item.id}">
+      <div class="nblock-hdr" onclick="toggleBlock(${p},'${item.id}',event)">
+        <button class="nblock-toggle" tabindex="-1">▶</button>
+        <button class="nblock-check ${item.done?'on':''} ${color}"
+          onclick="togglePlanDone(event,${p},'${item.id}')">
+          <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+            <path d="M1 4.5l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <input class="nblock-title ${item.done?'done':''}"
+          value="${esc(item.title)}"
+          onclick="event.stopPropagation()"
+          onchange="setPlanField(${p},'${item.id}','title',this.value)"
+          oninput="autosave()">
+        ${item.priority?`<span class="nblock-badge" style="background:${item.priority==='높음'?'var(--rose-bg)':item.priority==='보통'?'var(--amber-bg)':'var(--green-bg)'};color:${item.priority==='높음'?'var(--rose)':item.priority==='보통'?'var(--amber)':'var(--green)'}">${item.priority}</span>`:''}
+        <button class="nblock-rm" onclick="rmPlan(event,${p},'${item.id}')">✕</button>
+      </div>
+      <div class="nblock-body">
+        <div class="nfield">
+          <div class="nfield-lbl">📝 메모 / 진행 상황</div>
+          <textarea class="nfield-ta" placeholder="메모, 진행 상황, 링크 등 자유롭게…"
+            oninput="setPlanField(${p},'${item.id}','note',this.value);autosave()">${esc(item.note||'')}</textarea>
+        </div>
+        <div class="nfield">
+          <div class="nfield-lbl">📋 세부 사항</div>
+          <textarea class="nfield-ta" placeholder="세부 조건, 준비물, 참고 사항…"
+            oninput="setPlanField(${p},'${item.id}','detail',this.value);autosave()">${esc(item.detail||'')}</textarea>
+        </div>
+        <div class="nfield">
+          <div class="nfield-lbl">🚦 우선순위</div>
+          <select class="nfield-sel" onchange="setPlanField(${p},'${item.id}','priority',this.value);renderPlans(${p});autosave()">
+            <option value="" ${!item.priority?'selected':''}>없음</option>
+            <option value="높음" ${item.priority==='높음'?'selected':''}>🔴 높음</option>
+            <option value="보통" ${item.priority==='보통'?'selected':''}>🟡 보통</option>
+            <option value="낮음" ${item.priority==='낮음'?'selected':''}>🟢 낮음</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('') + `<button class="add-block" onclick="addPlan(${p})">＋ 플랜 항목 추가</button>`;
+}
+
+function toggleBlock(p, id, e) {
+  if(e.target.classList.contains('nblock-check')||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'||e.target.tagName==='SVG'||e.target.tagName==='PATH') return;
+  const person=p===1?sc().p1:sc().p2;
+  const item=person.plans.find(x=>x.id===id);
+  if(item){item.expanded=!item.expanded;renderPlans(p);}
+}
+function togglePlanDone(e,p,id) {
+  e.stopPropagation();
+  const person=p===1?sc().p1:sc().p2;
+  const item=person.plans.find(x=>x.id===id);
+  if(item){item.done=!item.done;renderPlans(p);updateProg();autosave();}
+}
+function setPlanField(p,id,f,v) {
+  const person=p===1?sc().p1:sc().p2;
+  const item=person.plans.find(x=>x.id===id);
+  if(item) item[f]=v;
+}
+function rmPlan(e,p,id) {
+  e.stopPropagation();
+  const person=p===1?sc().p1:sc().p2;
+  person.plans=person.plans.filter(x=>x.id!==id);
+  renderPlans(p);updateProg();autosave();
+}
+function addPlan(p) {
+  const person=p===1?sc().p1:sc().p2;
+  person.plans.push({id:uid(),title:'새 항목',done:false,note:'',detail:'',priority:'',expanded:true});
+  renderPlans(p);autosave();
+}
+
+// ── DOCS (Notion blocks) ───────────────────────────────────────────────────────
+function renderDocs(p) {
+  const person=p===1?sc().p1:sc().p2;
+  const el=document.getElementById(`p${p}docs`);
+  if(!person.docs||!person.docs.length) {
+    el.innerHTML=`<div class="empty">비자 루트 선택 시 서류 목록이<br>자동 생성돼요 📄</div>
+    <button class="add-block" onclick="addDoc(${p})">＋ 서류 추가</button>`;
+    return;
+  }
+  el.innerHTML = person.docs.map(d=>`
+    <div class="nblock ${d.expanded?'expanded':''}" id="db-${p}-${d.id}">
+      <div class="nblock-hdr" onclick="toggleDocBlock(${p},'${d.id}',event)">
+        <button class="nblock-toggle" tabindex="-1">▶</button>
+        <input class="nblock-title" value="${esc(d.name)}"
+          onclick="event.stopPropagation()"
+          onchange="setDocField(${p},'${d.id}','name',this.value)"
+          oninput="autosave()">
+        <button class="st-pill ${d.status}" onclick="cycleDoc(event,${p},'${d.id}')">${ST_LBL[d.status]}</button>
+        <button class="nblock-rm" onclick="rmDoc(event,${p},'${d.id}')">✕</button>
+      </div>
+      <div class="nblock-body">
+        <div class="nfield">
+          <div class="nfield-lbl">📝 메모</div>
+          <input class="nfield-inp" placeholder="준비 상황, 발급처, 링크…"
+            value="${esc(d.note||'')}"
+            onchange="setDocField(${p},'${d.id}','note',this.value)"
+            oninput="autosave()">
+        </div>
+        <div class="nfield">
+          <div class="nfield-lbl">📅 마감일</div>
+          <input type="date" class="nfield-inp" value="${d.deadline||''}"
+            onchange="setDocField(${p},'${d.id}','deadline',this.value);renderDocs(${p});autosave()">
+        </div>
+        ${d.deadline?`<div class="nfield"><span class="dbadge ${dBadgeClass(d.deadline)}">${dBadgeText(d.deadline)}</span></div>`:''}
+      </div>
+    </div>
+  `).join('') + `<button class="add-block" onclick="addDoc(${p})">＋ 서류 추가</button>`;
+}
+function dBadgeClass(dt){if(!dt)return'far';const d=Math.ceil((new Date(dt)-new Date())/86400000);return d<0?'over':d<30?'near':'far';}
+function dBadgeText(dt){if(!dt)return'';const d=Math.ceil((new Date(dt)-new Date())/86400000);return d<0?`${Math.abs(d)}일 지남`:d===0?'오늘 마감':`D-${d}`;}
+function toggleDocBlock(p,id,e){if(e.target.classList.contains('st-pill')||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;const person=p===1?sc().p1:sc().p2;const d=person.docs.find(x=>x.id===id);if(d){d.expanded=!d.expanded;renderDocs(p);}}
+function cycleDoc(e,p,id){e.stopPropagation();const person=p===1?sc().p1:sc().p2;const d=person.docs.find(x=>x.id===id);if(d){const i=ST_CYCLE.indexOf(d.status);d.status=ST_CYCLE[(i+1)%ST_CYCLE.length];renderDocs(p);autosave();}}
+function setDocField(p,id,f,v){const person=p===1?sc().p1:sc().p2;const d=person.docs.find(x=>x.id===id);if(d)d[f]=v;}
+function rmDoc(e,p,id){e.stopPropagation();const person=p===1?sc().p1:sc().p2;person.docs=person.docs.filter(x=>x.id!==id);renderDocs(p);autosave();}
+function addDoc(p){const person=p===1?sc().p1:sc().p2;person.docs.push({id:uid(),name:'새 서류',status:'not_started',note:'',deadline:'',expanded:true});renderDocs(p);autosave();}
+
+// ── TIMELINE (Notion blocks) ───────────────────────────────────────────────────
+function renderTimeline(p) {
+  const person=p===1?sc().p1:sc().p2;
+  const color=p===1?'rose':'ocean';
+  const el=document.getElementById(`p${p}timeline`);
+  if(!person.timeline||!person.timeline.length){
+    el.innerHTML=`<div class="empty">중요 일정을 추가해보세요 📅</div>
+    <button class="add-block" onclick="addTL(${p})">＋ 일정 추가</button>`;
+    return;
+  }
+  const sorted=[...person.timeline].sort((a,b)=>(a.date||'z')<(b.date||'z')?-1:1);
+  el.innerHTML=sorted.map(m=>`
+    <div class="nblock ${m.expanded?'expanded':''}" id="tb-${p}-${m.id}">
+      <div class="nblock-hdr" onclick="toggleTLBlock(${p},'${m.id}',event)">
+        <button class="nblock-toggle" tabindex="-1">▶</button>
+        <button class="nblock-check ${m.done?'on':''} ${color}"
+          onclick="toggleTLDone(event,${p},'${m.id}')">
+          <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+            <path d="M1 4.5l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <input class="nblock-title ${m.done?'done':''}" value="${esc(m.title)}"
+          onclick="event.stopPropagation()"
+          onchange="setTLField(${p},'${m.id}','title',this.value)"
+          oninput="autosave()">
+        ${m.date&&!m.done?`<span class="dbadge ${dBadgeClass(m.date)}">${dBadgeText(m.date)}</span>`:''}
+        ${m.done?`<span class="dbadge far">완료 ✓</span>`:''}
+        <button class="nblock-rm" onclick="rmTL(event,${p},'${m.id}')">✕</button>
+      </div>
+      <div class="nblock-body">
+        <div class="nfield">
+          <div class="nfield-lbl">📅 날짜</div>
+          <input type="date" class="nfield-inp" value="${m.date||''}"
+            onchange="setTLField(${p},'${m.id}','date',this.value);renderTimeline(${p});autosave()">
+        </div>
+        <div class="nfield">
+          <div class="nfield-lbl">📝 메모</div>
+          <textarea class="nfield-ta" placeholder="준비 사항, 링크, 참고 내용…"
+            oninput="setTLField(${p},'${m.id}','note',this.value);autosave()">${esc(m.note||'')}</textarea>
+        </div>
+      </div>
+    </div>
+  `).join('') + `<button class="add-block" onclick="addTL(${p})">＋ 일정 추가</button>`;
+}
+function toggleTLBlock(p,id,e){if(e.target.classList.contains('nblock-check')||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SVG'||e.target.tagName==='PATH') return;const person=p===1?sc().p1:sc().p2;const m=person.timeline.find(x=>x.id===id);if(m){m.expanded=!m.expanded;renderTimeline(p);}}
+function toggleTLDone(e,p,id){e.stopPropagation();const person=p===1?sc().p1:sc().p2;const m=person.timeline.find(x=>x.id===id);if(m){m.done=!m.done;renderTimeline(p);autosave();}}
+function setTLField(p,id,f,v){const person=p===1?sc().p1:sc().p2;const m=person.timeline.find(x=>x.id===id);if(m)m[f]=v;}
+function rmTL(e,p,id){e.stopPropagation();const person=p===1?sc().p1:sc().p2;person.timeline=person.timeline.filter(x=>x.id!==id);renderTimeline(p);autosave();}
+function addTL(p){const person=p===1?sc().p1:sc().p2;person.timeline.push({id:uid(),title:'새 일정',date:'',done:false,note:'',expanded:true});renderTimeline(p);autosave();}
+
+// ── Modal helpers ──────────────────────────────────────────────────────────────
+function openM(id){document.getElementById(id).style.display='flex';}
+function closeM(id){document.getElementById(id).style.display='none';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeM('fbModal');closeM('snewModal');}});
+
+// ── Util ───────────────────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+loadLocal();
+writeDOM();
+
+if(!localStorage.getItem('_fbhint') && !window._fbOn) {
+  setTimeout(()=>{ localStorage.setItem('_fbhint','1'); openM('fbModal'); }, 1000);
+}
+setTimeout(()=>{ if(window._fbOn) setSP('live'); }, 800);
+</script>
+</body>
+</html>
