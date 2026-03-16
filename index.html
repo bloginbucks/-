@@ -509,6 +509,76 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
 .shared-memo-author.ocean { color: var(--ocean); }
 
 @keyframes up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── 모바일 최적화 ── */
+@media (max-width: 768px) {
+  header { padding: 0; }
+  .hdr { padding: 10px 14px; gap: 8px; }
+  .hdr-title { font-size: 14px; }
+  .hdr-sub { font-size: 11px; }
+  .sync-pill { font-size: 10px; padding: 3px 8px; }
+  .save-flash { display: none; }
+
+  .sbar-inner { padding: 0 14px; }
+  .stab { font-size: 12px; padding: 8px 10px; }
+  .sadd { font-size: 11px; padding: 8px 10px; }
+
+  main { padding: 12px 14px 60px; gap: 12px; }
+
+  .banner { padding: 14px 16px; gap: 10px; }
+  .dday-inp { font-size: 18px; }
+  .dday-pill { font-size: 11px; }
+  .s-name-inp { font-size: 14px; }
+  .circles { gap: 10px; }
+  .circ svg { width: 44px; height: 44px; }
+  .circ-num { font-size: 10px; }
+  .circ-name { font-size: 10px; }
+
+  .pgrid { grid-template-columns: 1fr; gap: 12px; }
+
+  .phead { padding: 12px 14px 10px; }
+  .pname { font-size: 14px; }
+  .ppct { font-size: 11px; }
+  .visa-sel { font-size: 13px; padding: 7px 8px; }
+
+  .ptabs { overflow-x: auto; scrollbar-width: none; }
+  .ptabs::-webkit-scrollbar { display: none; }
+  .ptab { font-size: 11px; padding: 8px 6px; white-space: nowrap; flex: none; min-width: 60px; }
+
+  .pbody { padding: 10px 10px; max-height: 340px; }
+
+  .nblock-title { font-size: 13px; }
+  .nblock-body { padding: 8px 10px; }
+  .nfield-ta { min-height: 56px; font-size: 13px; }
+  .nfield-inp { font-size: 13px; }
+  .add-block { font-size: 12px; padding: 8px; }
+
+  .memo-title-inp { font-size: 13px; }
+  .memo-body-inp { font-size: 13px; padding: 5px 10px 8px; }
+  .memo-meta { padding: 0 10px 7px; }
+
+  .ssec { padding: 14px 16px; }
+  .ssec-title { font-size: 13px; }
+  .shared-ta { font-size: 13px; }
+
+  .vtbl { font-size: 12px; }
+  .vtbl th { padding: 6px 8px; font-size: 10px; }
+  .vtbl td { padding: 8px 8px; }
+  .vdesc { display: none; }
+
+  .modal { padding: 20px; border-radius: 16px 16px 0 0; align-self: flex-end; max-width: 100%; width: 100%; }
+  .overlay { align-items: flex-end; }
+  .snew { max-width: 100%; }
+
+  footer { font-size: 10px; padding: 10px; }
+}
+
+@media (max-width: 380px) {
+  .hdr-title { font-size: 13px; }
+  .banner-left { min-width: 0; }
+  .dday-inp { font-size: 16px; }
+}
+
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -620,8 +690,8 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
       <div class="phead rose">
         <div class="phead-top">
           <div class="pname-row">
-            <input class="pname rose" id="p1name" value="낭니" spellcheck="false" oninput="autosave()">
-            <span class="birth-tag rose">89년생</span>
+            <input class="pname rose" id="p1name" value="눙니" spellcheck="false" oninput="autosave()">
+            
           </div>
           <span class="ppct rose" id="p1pct">0%</span>
         </div>
@@ -661,8 +731,8 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
       <div class="phead ocean">
         <div class="phead-top">
           <div class="pname-row">
-            <input class="pname ocean" id="p2name" value="나" spellcheck="false" oninput="autosave()">
-            <span class="birth-tag ocean">02년생</span>
+            <input class="pname ocean" id="p2name" value="낭니" spellcheck="false" oninput="autosave()">
+            
           </div>
           <span class="ppct ocean" id="p2pct">0%</span>
         </div>
@@ -817,8 +887,8 @@ function newPerson(name, birth) {
 }
 function newScenario(name, emoji) {
   return { id:uid(), name, emoji:emoji||'🗂️',
-    p1: newPerson('낭니', 1989),
-    p2: newPerson('나', 2002),
+    p1: newPerson('눙니', 1989),
+    p2: newPerson('낭니', 2002),
     shared:'', sharedMemos:[], targetDate:'' };
 }
 
@@ -877,8 +947,8 @@ function readDOM() {
 // ── Write state → DOM ──────────────────────────────────────────────────────────
 function writeDOM() {
   const s = sc();
-  document.getElementById('p1name').value    = s.p1.name||'낭니';
-  document.getElementById('p2name').value    = s.p2.name||'나';
+  document.getElementById('p1name').value    = s.p1.name||'눙니';
+  document.getElementById('p2name').value    = s.p2.name||'낭니';
   document.getElementById('p1visa').value    = s.p1.visa||'';
   document.getElementById('p2visa').value    = s.p2.visa||'';
   document.getElementById('p1custom').value  = s.p1.customVisa||'';
@@ -889,9 +959,9 @@ function writeDOM() {
   document.getElementById('ddayInp').value   = s.targetDate||'';
   document.getElementById('sNameInp').value  = s.name||'';
   document.getElementById('curEmoji').textContent = s.emoji||'🗂️';
-  document.getElementById('hdrSub').textContent = (s.p1.name||'낭니') + ' & ' + (s.p2.name||'나');
-  document.getElementById('cn1').textContent = s.p1.name||'낭니';
-  document.getElementById('cn2').textContent = s.p2.name||'나';
+  document.getElementById('hdrSub').textContent = (s.p1.name||'눙니') + ' & ' + (s.p2.name||'낭니');
+  document.getElementById('cn1').textContent = s.p1.name||'눙니';
+  document.getElementById('cn2').textContent = s.p2.name||'낭니';
   renderSTabs(); renderAll(); updateDday(); updateProg();
   if(S.lastSaved) ftrUpdate();
   if(window._fbOn) setSP('live');
@@ -1299,7 +1369,7 @@ function addSharedMemo() {
   // figure out "author" — just use p1 as default, could be either
   const authorEl = document.getElementById('p1name');
   const author = 'p1';
-  const authorName = authorEl ? authorEl.value : '낭니';
+  const authorName = authorEl ? authorEl.value : '눙니';
   sc().sharedMemos.unshift({ id:uid(), title:'', body:'', tag:'', date:new Date().toISOString(), author, authorName });
   renderSharedMemos(); autosave();
   setTimeout(()=>{
