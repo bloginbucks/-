@@ -556,7 +556,7 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
     <div class="hdr-flag">🇦🇺</div>
     <div>
       <div class="hdr-title">호주 이민 플래너</div>
-      <div class="hdr-sub" id="hdrSub">여자친구 &amp; 나</div>
+      <div class="hdr-sub" id="hdrSub">낭니 &amp; 나</div>
     </div>
     <div class="hdr-right">
       <div class="sync-pill local" id="syncPill"><div class="sync-dot"></div><span id="syncLbl">로컬 저장</span></div>
@@ -596,7 +596,7 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
         <div style="margin-top:-42px;height:50px;display:flex;align-items:center;justify-content:center">
           <span class="circ-num" id="cp1">0%</span>
         </div>
-        <div class="circ-name" id="cn1">여자친구</div>
+        <div class="circ-name" id="cn1">낭니</div>
       </div>
       <div class="circ">
         <svg viewBox="0 0 50 50">
@@ -620,7 +620,7 @@ footer { text-align: center; padding: 12px; font-size: 11px; color: var(--text-3
       <div class="phead rose">
         <div class="phead-top">
           <div class="pname-row">
-            <input class="pname rose" id="p1name" value="여자친구" spellcheck="false" oninput="autosave()">
+            <input class="pname rose" id="p1name" value="낭니" spellcheck="false" oninput="autosave()">
             <span class="birth-tag rose">89년생</span>
           </div>
           <span class="ppct rose" id="p1pct">0%</span>
@@ -817,7 +817,7 @@ function newPerson(name, birth) {
 }
 function newScenario(name, emoji) {
   return { id:uid(), name, emoji:emoji||'🗂️',
-    p1: newPerson('여자친구', 1989),
+    p1: newPerson('낭니', 1989),
     p2: newPerson('나', 2002),
     shared:'', sharedMemos:[], targetDate:'' };
 }
@@ -877,7 +877,7 @@ function readDOM() {
 // ── Write state → DOM ──────────────────────────────────────────────────────────
 function writeDOM() {
   const s = sc();
-  document.getElementById('p1name').value    = s.p1.name||'여자친구';
+  document.getElementById('p1name').value    = s.p1.name||'낭니';
   document.getElementById('p2name').value    = s.p2.name||'나';
   document.getElementById('p1visa').value    = s.p1.visa||'';
   document.getElementById('p2visa').value    = s.p2.visa||'';
@@ -889,8 +889,8 @@ function writeDOM() {
   document.getElementById('ddayInp').value   = s.targetDate||'';
   document.getElementById('sNameInp').value  = s.name||'';
   document.getElementById('curEmoji').textContent = s.emoji||'🗂️';
-  document.getElementById('hdrSub').textContent = (s.p1.name||'여자친구') + ' & ' + (s.p2.name||'나');
-  document.getElementById('cn1').textContent = s.p1.name||'여자친구';
+  document.getElementById('hdrSub').textContent = (s.p1.name||'낭니') + ' & ' + (s.p2.name||'나');
+  document.getElementById('cn1').textContent = s.p1.name||'낭니';
   document.getElementById('cn2').textContent = s.p2.name||'나';
   renderSTabs(); renderAll(); updateDday(); updateProg();
   if(S.lastSaved) ftrUpdate();
@@ -1299,7 +1299,7 @@ function addSharedMemo() {
   // figure out "author" — just use p1 as default, could be either
   const authorEl = document.getElementById('p1name');
   const author = 'p1';
-  const authorName = authorEl ? authorEl.value : '여자친구';
+  const authorName = authorEl ? authorEl.value : '낭니';
   sc().sharedMemos.unshift({ id:uid(), title:'', body:'', tag:'', date:new Date().toISOString(), author, authorName });
   renderSharedMemos(); autosave();
   setTimeout(()=>{
