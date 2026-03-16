@@ -959,7 +959,8 @@ function ptab(p,tab,btn) {
     const el=document.getElementById(`p${p}${t}`); if(el) el.style.display=t===tab?'':'none';
   });
   const c=p===1?'rose':'ocean';
-  btn.closest('.ptabs').querySelectorAll('.ptab').forEach(b=>b.classList.remove('on',c));
+  // remove both colors before re-adding correct one
+  btn.closest('.ptabs').querySelectorAll('.ptab').forEach(b=>b.classList.remove('on','rose','ocean'));
   btn.classList.add('on',c);
 }
 
@@ -969,16 +970,13 @@ function onVisaChange(p, visa) {
   person.visa = visa;
   document.getElementById(`p${p}custom`).style.display = visa==='custom'?'':'none';
 
-  if(visa && visa!=='custom') {
-    const hasPlans = person.plans && person.plans.length > 0;
-    const hasDocs  = person.docs  && person.docs.length  > 0;
-    // Only auto-fill if currently empty; otherwise ask
-    if(!hasPlans && !hasDocs) {
-      fillVisaTemplate(person, visa);
-    } else {
-      const keep = confirm(`기존 플랜/서류 항목이 있어요.\n\n"확인" → 기존 내용 유지\n"취소" → ${visa} 템플릿으로 초기화`);
-      if(!keep) fillVisaTemplate(person, visa);
-    }
+  if(!visa) {
+    // 미정 → 싹 다 지우기
+    person.plans = [];
+    person.docs  = [];
+  } else if(visa !== 'custom') {
+    // 비자 선택 → 템플릿으로 채우기 (기존 건 덮어쓰기)
+    fillVisaTemplate(person, visa);
   }
   renderPlans(p); renderDocs(p); updateProg(); autosave();
 }
@@ -1092,8 +1090,17 @@ function rmPlan(e,p,id) {
 }
 function addPlan(p) {
   const person=p===1?sc().p1:sc().p2;
+  if(!person.plans) person.plans=[];
   person.plans.push({id:uid(),title:'새 항목',done:false,note:'',detail:'',priority:'',expanded:true});
-  renderPlans(p);autosave();
+  renderPlans(p); autosave();
+  // focus new item title
+  setTimeout(()=>{
+    const inputs = document.querySelectorAll(`#p${p}plans .nblock-title`);
+    if(inputs.length) {
+      const last = inputs[inputs.length-1];
+      last.focus(); last.select();
+    }
+  }, 50);
 }
 
 // ── DOCS (Notion blocks) ───────────────────────────────────────────────────────
